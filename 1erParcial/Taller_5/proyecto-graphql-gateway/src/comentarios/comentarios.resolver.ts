@@ -1,35 +1,27 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { ComentariosService } from './comentarios.service';
 import { Comentario } from './entities/comentario.entity';
-import { CreateComentarioInput } from './dto/create-comentario.input';
-import { UpdateComentarioInput } from './dto/update-comentario.input';
+import { ServicioService } from 'src/servicio/servicio.service';
 
 @Resolver(() => Comentario)
 export class ComentariosResolver {
-  constructor(private readonly comentariosService: ComentariosService) {}
+  constructor(private readonly comentariosService: ComentariosService,
+    private readonly serviciosService: ServicioService
+  ) {}
 
-  @Mutation(() => Comentario)
-  createComentario(@Args('createComentarioInput') createComentarioInput: CreateComentarioInput) {
-    return this.comentariosService.create(createComentarioInput);
-  }
 
   @Query(() => [Comentario], { name: 'comentarios' })
-  findAll() {
+  getComentarios() {
     return this.comentariosService.findAll();
   }
 
   @Query(() => Comentario, { name: 'comentario' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  getComentario(@Args('id', { type: () => Int }) id: number) {
     return this.comentariosService.findOne(id);
   }
 
-  @Mutation(() => Comentario)
-  updateComentario(@Args('updateComentarioInput') updateComentarioInput: UpdateComentarioInput) {
-    return this.comentariosService.update(updateComentarioInput.id, updateComentarioInput);
-  }
-
-  @Mutation(() => Comentario)
-  removeComentario(@Args('id', { type: () => Int }) id: number) {
-    return this.comentariosService.remove(id);
+  @ResolveField()
+  async servicio(@Parent  () comentario: Comentario) {
+    return this.serviciosService.findOne(comentario.servicio);
   }
 }

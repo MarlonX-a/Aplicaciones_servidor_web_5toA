@@ -1,11 +1,14 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { ReservasService } from './reservas.service';
 import { Reserva } from './entities/reserva.entity';
+import { ClientesService } from 'src/clientes/clientes.service';
 
 
 @Resolver(() => Reserva)
 export class ReservasResolver {
-  constructor(private readonly reservasService: ReservasService) {}
+  constructor(private readonly reservasService: ReservasService,
+    private readonly clienteService: ClientesService
+  ) {}
   @Query(() => [Reserva], { name: 'reservas' })
   async findAll() {
     return this.reservasService.findAll();
@@ -16,4 +19,8 @@ export class ReservasResolver {
     return this.reservasService.findOne(id);
   }
 
+  @ResolveField()
+  async cliente(@Parent() reserva: Reserva) {
+    return this.clienteService.findOne(reserva.cliente);
+  }
 }

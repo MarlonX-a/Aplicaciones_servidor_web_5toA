@@ -17,6 +17,11 @@ type Categoria {
   servicio: [Servicio!]
 }
 
+type CategoriaCount {
+  cantidad: Float!
+  categoria: String!
+}
+
 type Cliente {
   calificacion: [Calificacione!]
   comentario: [Comentario!]
@@ -37,56 +42,6 @@ type Comentario {
   titulo: String!
 }
 
-input CreateCalificacioneInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateCategoriaInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateClienteInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateComentarioInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateFotoServicioInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateProveedoreInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateReservaServicioInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateServicioUbicacionInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateUbicacioneInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input CreateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -97,39 +52,6 @@ type FotoServicio {
   id: String!
   servicio: Servicio!
   url_foto: String!
-}
-
-type Mutation {
-  createCalificacione(createCalificacioneInput: CreateCalificacioneInput!): Calificacione!
-  createCategoria(createCategoriaInput: CreateCategoriaInput!): Categoria!
-  createCliente(createClienteInput: CreateClienteInput!): Cliente!
-  createComentario(createComentarioInput: CreateComentarioInput!): Comentario!
-  createFotoServicio(createFotoServicioInput: CreateFotoServicioInput!): FotoServicio!
-  createProveedore(createProveedoreInput: CreateProveedoreInput!): Proveedore!
-  createReservaServicio(createReservaServicioInput: CreateReservaServicioInput!): ReservaServicio!
-  createServicioUbicacion(createServicioUbicacionInput: CreateServicioUbicacionInput!): ServicioUbicacion!
-  createUbicacione(createUbicacioneInput: CreateUbicacioneInput!): Ubicacione!
-  createUser(createUserInput: CreateUserInput!): User!
-  removeCalificacione(id: Int!): Calificacione!
-  removeCategoria(id: Int!): Categoria!
-  removeCliente(id: Int!): Cliente!
-  removeComentario(id: Int!): Comentario!
-  removeFotoServicio(id: Int!): FotoServicio!
-  removeProveedore(id: Int!): Proveedore!
-  removeReservaServicio(id: Int!): ReservaServicio!
-  removeServicioUbicacion(id: Int!): ServicioUbicacion!
-  removeUbicacione(id: Int!): Ubicacione!
-  removeUser(id: Int!): User!
-  updateCalificacione(updateCalificacioneInput: UpdateCalificacioneInput!): Calificacione!
-  updateCategoria(updateCategoriaInput: UpdateCategoriaInput!): Categoria!
-  updateCliente(updateClienteInput: UpdateClienteInput!): Cliente!
-  updateComentario(updateComentarioInput: UpdateComentarioInput!): Comentario!
-  updateFotoServicio(updateFotoServicioInput: UpdateFotoServicioInput!): FotoServicio!
-  updateProveedore(updateProveedoreInput: UpdateProveedoreInput!): Proveedore!
-  updateReservaServicio(updateReservaServicioInput: UpdateReservaServicioInput!): ReservaServicio!
-  updateServicioUbicacion(updateServicioUbicacionInput: UpdateServicioUbicacionInput!): ServicioUbicacion!
-  updateUbicacione(updateUbicacioneInput: UpdateUbicacioneInput!): Ubicacione!
-  updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
 type Pago {
@@ -156,6 +78,7 @@ type Query {
   calificaciones: [Calificacione!]!
   categoria(id: Int!): Categoria!
   categorias: [Categoria!]!
+  categoriasPorFrecuencia: [CategoriaCount!]!
   cliente(id: Int!): Cliente!
   clientes: [Cliente!]!
   comentario(id: Int!): Comentario!
@@ -225,66 +148,6 @@ type Ubicacione {
   proveedor: [Proveedore!]
   provincia: String!
   servicioUbicacion: [ServicioUbicacion!]
-}
-
-input UpdateCalificacioneInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateCategoriaInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateClienteInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateComentarioInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateFotoServicioInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateProveedoreInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateReservaServicioInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateServicioUbicacionInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateUbicacioneInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input UpdateUserInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
 }
 
 type User {

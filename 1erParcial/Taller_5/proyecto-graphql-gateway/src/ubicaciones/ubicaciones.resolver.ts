@@ -1,35 +1,29 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { UbicacionesService } from './ubicaciones.service';
 import { Ubicacione } from './entities/ubicacione.entity';
 import { CreateUbicacioneInput } from './dto/create-ubicacione.input';
 import { UpdateUbicacioneInput } from './dto/update-ubicacione.input';
+import { ServicioUbicacionService } from 'src/servicio-ubicacion/servicio-ubicacion.service';
 
 @Resolver(() => Ubicacione)
 export class UbicacionesResolver {
-  constructor(private readonly ubicacionesService: UbicacionesService) {}
-
-  @Mutation(() => Ubicacione)
-  createUbicacione(@Args('createUbicacioneInput') createUbicacioneInput: CreateUbicacioneInput) {
-    return this.ubicacionesService.create(createUbicacioneInput);
-  }
+  constructor(private readonly ubicacionesService: UbicacionesService,
+    private readonly serviciosUbicacionesService: ServicioUbicacionService
+  ) {}
 
   @Query(() => [Ubicacione], { name: 'ubicaciones' })
-  findAll() {
+  getUbicaciones() {
     return this.ubicacionesService.findAll();
   }
 
   @Query(() => Ubicacione, { name: 'ubicacione' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  getUbicacion(@Args('id', { type: () => Int }) id: number) {
     return this.ubicacionesService.findOne(id);
   }
 
-  @Mutation(() => Ubicacione)
-  updateUbicacione(@Args('updateUbicacioneInput') updateUbicacioneInput: UpdateUbicacioneInput) {
-    return this.ubicacionesService.update(updateUbicacioneInput.id, updateUbicacioneInput);
+  @ResolveField()
+  async servicioUbicacion(@Parent() ubicacion: Ubicacione) {
+    return this.serviciosUbicacionesService.findOne(ubicacion.servicioUbicacion);
   }
 
-  @Mutation(() => Ubicacione)
-  removeUbicacione(@Args('id', { type: () => Int }) id: number) {
-    return this.ubicacionesService.remove(id);
-  }
 }

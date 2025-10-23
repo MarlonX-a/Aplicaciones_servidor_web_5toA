@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { CreateClienteInput } from './dto/create-cliente.input';
-import { UpdateClienteInput } from './dto/update-cliente.input';
+
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class ClientesService {
-  create(createClienteInput: CreateClienteInput) {
-    return 'This action adds a new cliente';
+  constructor(private readonly httpService: HttpService) {}
+
+
+  async findAll() {
+    const response = await firstValueFrom(
+      this.httpService.get('http://localhost:3000/cliente')
+    );
+    return response.data;
   }
 
-  findAll() {
-    return `This action returns all clientes`;
+  async findOne(id) {
+    const response = await firstValueFrom(
+      this.httpService.get(`http://localhost:3000/cliente/${id}`)
+    );
+    return response.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cliente`;
+  async findByUbicacion(ubicacionId: string) {
+    const clientes = await this.findAll();
+    return clientes.filter( c => c.ubicacionId === ubicacionId);
   }
 
-  update(id: number, updateClienteInput: UpdateClienteInput) {
-    return `This action updates a #${id} cliente`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} cliente`;
-  }
 }

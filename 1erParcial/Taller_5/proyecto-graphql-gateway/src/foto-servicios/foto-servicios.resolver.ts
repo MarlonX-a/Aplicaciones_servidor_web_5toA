@@ -1,35 +1,28 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { FotoServiciosService } from './foto-servicios.service';
 import { FotoServicio } from './entities/foto-servicio.entity';
-import { CreateFotoServicioInput } from './dto/create-foto-servicio.input';
-import { UpdateFotoServicioInput } from './dto/update-foto-servicio.input';
+import { ServicioService } from 'src/servicio/servicio.service';
 
 @Resolver(() => FotoServicio)
 export class FotoServiciosResolver {
-  constructor(private readonly fotoServiciosService: FotoServiciosService) {}
+  constructor(private readonly fotoServiciosService: FotoServiciosService,
+    private readonly serviciosService: ServicioService
+  ) {}
 
-  @Mutation(() => FotoServicio)
-  createFotoServicio(@Args('createFotoServicioInput') createFotoServicioInput: CreateFotoServicioInput) {
-    return this.fotoServiciosService.create(createFotoServicioInput);
-  }
 
   @Query(() => [FotoServicio], { name: 'fotoServicios' })
-  findAll() {
+  getFotos() {
     return this.fotoServiciosService.findAll();
   }
 
   @Query(() => FotoServicio, { name: 'fotoServicio' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  getFoto(@Args('id', { type: () => Int }) id: number) {
     return this.fotoServiciosService.findOne(id);
   }
 
-  @Mutation(() => FotoServicio)
-  updateFotoServicio(@Args('updateFotoServicioInput') updateFotoServicioInput: UpdateFotoServicioInput) {
-    return this.fotoServiciosService.update(updateFotoServicioInput.id, updateFotoServicioInput);
-  }
+  @ResolveField()
+  async servicio(@Parent () fotoServicio: FotoServicio) {
+    return this.serviciosService.findOne(fotoServicio.servicio);
 
-  @Mutation(() => FotoServicio)
-  removeFotoServicio(@Args('id', { type: () => Int }) id: number) {
-    return this.fotoServiciosService.remove(id);
-  }
+ }
 }

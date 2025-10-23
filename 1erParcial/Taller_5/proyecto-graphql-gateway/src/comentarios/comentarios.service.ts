@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { CreateComentarioInput } from './dto/create-comentario.input';
 import { UpdateComentarioInput } from './dto/update-comentario.input';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class ComentariosService {
-  create(createComentarioInput: CreateComentarioInput) {
-    return 'This action adds a new comentario';
+  constructor(private readonly httpService: HttpService) {}
+
+  async findAll() {
+    const response = await firstValueFrom(
+      this.httpService.get('http://localhost:3000/comentarios')
+    );
+    return response.data;
   }
 
-  findAll() {
-    return `This action returns all comentarios`;
+  async findOne(id: number) {
+    const response = await firstValueFrom(
+      this.httpService.get(`http://localhost:3000/comentarios/${id}`)
+    );
+    return response.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comentario`;
+  async findByCliente (clienteId: number) {
+    const comentarios =  await this.findAll();
+    return comentarios.filter( c => c.clienteId === clienteId);
   }
 
-  update(id: number, updateComentarioInput: UpdateComentarioInput) {
-    return `This action updates a #${id} comentario`;
+  async findByServicio (servicioId: number) {
+    const comentarios =  await this.findAll();
+    return comentarios.filter( c => c.servicioId === servicioId);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comentario`;
-  }
+
 }

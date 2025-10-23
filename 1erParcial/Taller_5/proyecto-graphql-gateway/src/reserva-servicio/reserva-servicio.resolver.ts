@@ -1,35 +1,27 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { ReservaServicioService } from './reserva-servicio.service';
 import { ReservaServicio } from './entities/reserva-servicio.entity';
-import { CreateReservaServicioInput } from './dto/create-reserva-servicio.input';
-import { UpdateReservaServicioInput } from './dto/update-reserva-servicio.input';
+import { ServicioService } from 'src/servicio/servicio.service';
 
 @Resolver(() => ReservaServicio)
 export class ReservaServicioResolver {
-  constructor(private readonly reservaServicioService: ReservaServicioService) {}
-
-  @Mutation(() => ReservaServicio)
-  createReservaServicio(@Args('createReservaServicioInput') createReservaServicioInput: CreateReservaServicioInput) {
-    return this.reservaServicioService.create(createReservaServicioInput);
-  }
+  constructor(private readonly reservaServicioService: ReservaServicioService,
+    private readonly servicioService: ServicioService
+  ) {}
 
   @Query(() => [ReservaServicio], { name: 'reservaServicio' })
-  findAll() {
+  getReservaServicios() {
     return this.reservaServicioService.findAll();
   }
 
   @Query(() => ReservaServicio, { name: 'reservaServicio' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  getReservaServicio(@Args('id', { type: () => Int }) id: number) {
     return this.reservaServicioService.findOne(id);
   }
 
-  @Mutation(() => ReservaServicio)
-  updateReservaServicio(@Args('updateReservaServicioInput') updateReservaServicioInput: UpdateReservaServicioInput) {
-    return this.reservaServicioService.update(updateReservaServicioInput.id, updateReservaServicioInput);
+  @ResolveField()
+  async servicio(@Parent() reservaServicio: ReservaServicio) {
+    return this.servicioService.findOne(reservaServicio.servicio);
   }
 
-  @Mutation(() => ReservaServicio)
-  removeReservaServicio(@Args('id', { type: () => Int }) id: number) {
-    return this.reservaServicioService.remove(id);
-  }
 }

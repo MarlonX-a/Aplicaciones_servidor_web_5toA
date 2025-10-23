@@ -21,7 +21,7 @@ export class ClienteService {
     @InjectRepository(Ubicacion)
     private readonly ubicacionRepository: Repository<Ubicacion>,
 
-    @InjectRepository(Calificacion) 
+    @InjectRepository(Calificacion)
     private readonly calificacionRepository: Repository<Calificacion>,
 
     @InjectRepository(Comentario)
@@ -34,38 +34,53 @@ export class ClienteService {
   async create(createClienteDto: CreateClienteDto) {
     const { telefono, user, ubicacion, calificacion, comentario, reserva } = createClienteDto;
 
-    const userNuevo = await this.userRepository.findOneBy({ id: user });
-    if (!userNuevo) {
-      throw new NotFoundException(`Usuario con ID ${user} no encontrado`);
+    // Usuario opcional
+    let userNuevo: User | undefined;
+    if (user) {
+      const foundUser = await this.userRepository.findOneBy({ id: user });
+      if (!foundUser) throw new NotFoundException(`Usuario con ID ${user} no encontrado`);
+      userNuevo = foundUser;
     }
 
-    const ubicacionR = await this.ubicacionRepository.findOneBy({ id: ubicacion });
-    if (!ubicacionR) {
-      throw new NotFoundException(`Ubicación con ID ${ubicacion} no encontrada`);
+    // Ubicación opcional
+    let ubicacionR: Ubicacion | undefined;
+    if (ubicacion) {
+      const foundUbicacion = await this.ubicacionRepository.findOneBy({ id: ubicacion });
+      if (!foundUbicacion) throw new NotFoundException(`Ubicación con ID ${ubicacion} no encontrada`);
+      ubicacionR = foundUbicacion;
     }
 
-    const calificacionR = await this.calificacionRepository.findOneBy({ id: calificacion });
-    if (!calificacionR) {
-      throw new NotFoundException(`Calificación con ID ${calificacion} no encontrada`);
+    // Calificación opcional
+    let calificaciones: Calificacion[] = [];
+    if (calificacion) {
+      const foundCalificacion = await this.calificacionRepository.findOneBy({ id: calificacion });
+      if (!foundCalificacion) throw new NotFoundException(`Calificación con ID ${calificacion} no encontrada`);
+      calificaciones = [foundCalificacion];
     }
 
-    const comentarioR = await this.comentarioRepository.findOneBy({ id: comentario });
-    if (!comentarioR) {
-      throw new NotFoundException(`Comentario con ID ${comentario} no encontrado`);
+    // Comentario opcional
+    let comentarios: Comentario[] = [];
+    if (comentario) {
+      const foundComentario = await this.comentarioRepository.findOneBy({ id: comentario });
+      if (!foundComentario) throw new NotFoundException(`Comentario con ID ${comentario} no encontrado`);
+      comentarios = [foundComentario];
     }
 
-    const reservaR = await this.reservaRepository.findOneBy({ id: reserva });
-    if (!reservaR) {
-      throw new NotFoundException(`Reserva con ID ${reserva} no encontrada`);
+    // Reserva opcional
+    let reservas: Reserva[] = [];
+    if (reserva) {
+      const foundReserva = await this.reservaRepository.findOneBy({ id: reserva });
+      if (!foundReserva) throw new NotFoundException(`Reserva con ID ${reserva} no encontrada`);
+      reservas = [foundReserva];
     }
 
     const cliente = this.clienteRepository.create({
       telefono,
       user: userNuevo,
       ubicacion: ubicacionR,
-      calificacion: [calificacionR],
-      comentario: [comentarioR],
-      reserva: [reservaR]
+      calificacion: calificaciones,
+      comentario: comentarios,
+      reserva: reservas,
     });
 
     return this.clienteRepository.save(cliente);
@@ -80,7 +95,7 @@ export class ClienteService {
   async findOne(id: string) {
     const cliente = await this.clienteRepository.findOne({
       where: { id },
-      relations: ['user', 'ubicacion',  'calificacion', 'comentario', 'reserva'],
+      relations: ['user', 'ubicacion', 'calificacion', 'comentario', 'reserva'],
     });
 
     if (!cliente) {
@@ -133,11 +148,9 @@ export class ClienteService {
       if (!reservaR) throw new NotFoundException(`Reserva con ID ${updateClienteDto.reserva} no encontrada`);
       cliente.reserva = [reservaR];
     }
-    
 
     return this.clienteRepository.save(cliente);
   }
-
 
   async remove(id: string) {
     const cliente = await this.findOne(id);

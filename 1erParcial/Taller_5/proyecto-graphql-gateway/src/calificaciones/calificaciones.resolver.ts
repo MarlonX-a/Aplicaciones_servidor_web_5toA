@@ -8,28 +8,15 @@ import { UpdateCalificacioneInput } from './dto/update-calificacione.input';
 export class CalificacionesResolver {
   constructor(private readonly calificacionesService: CalificacionesService) {}
 
-  @Mutation(() => Calificacione)
-  createCalificacione(@Args('createCalificacioneInput') createCalificacioneInput: CreateCalificacioneInput) {
-    return this.calificacionesService.create(createCalificacioneInput);
-  }
 
   @Query(() => [Calificacione], { name: 'calificaciones' })
-  findAll() {
+  async getCalificaciones() {
     return this.calificacionesService.findAll();
   }
 
   @Query(() => Calificacione, { name: 'calificacione' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  async getCalificacion(@Args('id', { type: () => Int }) id: number) {
     return this.calificacionesService.findOne(id);
   }
 
-  @Mutation(() => Calificacione)
-  updateCalificacione(@Args('updateCalificacioneInput') updateCalificacioneInput: UpdateCalificacioneInput) {
-    return this.calificacionesService.update(updateCalificacioneInput.id, updateCalificacioneInput);
-  }
-
-  @Mutation(() => Calificacione)
-  removeCalificacione(@Args('id', { type: () => Int }) id: number) {
-    return this.calificacionesService.remove(id);
-  }
 }

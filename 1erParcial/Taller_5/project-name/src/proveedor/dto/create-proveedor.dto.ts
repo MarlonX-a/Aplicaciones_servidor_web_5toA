@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from "class-validator";
+import { IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateProveedorDto {
     @IsString()
@@ -8,11 +8,14 @@ export class CreateProveedorDto {
     descripcion: string;
 
     @IsUUID()
-    user: string;
+    @IsOptional()
+    user?: string;
 
     @IsUUID()
-    ubicacion: string;
+    @IsOptional()
+    ubicacion?: string;
 
     @IsUUID()
-    servicio: string;
+    @IsOptional()
+    servicio?: string;
 }

@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCalificacioneInput } from './dto/create-calificacione.input';
 import { UpdateCalificacioneInput } from './dto/update-calificacione.input';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';   
 
 @Injectable()
 export class CalificacionesService {
-  create(createCalificacioneInput: CreateCalificacioneInput) {
-    return 'This action adds a new calificacione';
+  constructor(private readonly httpService: HttpService) {}
+
+
+  async findAll() {
+    const response = await firstValueFrom(
+      this.httpService.get('/calificaciones')
+    );
+    return response.data;
   }
 
-  findAll() {
-    return `This action returns all calificaciones`;
+  async findOne(id) {
+    const response = await firstValueFrom(
+      this.httpService.get(`/calificaciones/${id}`)
+    );
+    return response.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} calificacione`;
-  }
-
-  update(id: number, updateCalificacioneInput: UpdateCalificacioneInput) {
-    return `This action updates a #${id} calificacione`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} calificacione`;
-  }
 }

@@ -14,19 +14,19 @@ export class Cliente {
     @Column()
     telefono: string;
 
-    @OneToOne(() => User, (user) => user.cliente)
+    @OneToOne(() => User, (user) => user.cliente, { nullable: true })
     @JoinColumn()
-    user: User;
+    user?: User;
 
-    @ManyToOne(() => Ubicacion, (ubicacion) => ubicacion.cliente)
-    ubicacion: Ubicacion;
+    @ManyToOne(() => Ubicacion, (ubicacion) => ubicacion.cliente, {nullable: true})
+    ubicacion?: Ubicacion;
 
-    @OneToMany(() => Reserva, (reserva) => reserva.cliente )
-    reserva : Reserva[];
+    @OneToMany(() => Reserva, (reserva) => reserva.cliente, {nullable: true} )
+    reserva?: Reserva[];
 
-    @OneToMany(() => Comentario, (comentario) => comentario.cliente)
-    comentario: Comentario[];
+    @OneToMany(() => Comentario, (comentario) => comentario.cliente, {nullable: true})
+    comentario?: Comentario[];
 
-    @OneToMany(() => Calificacion, (calificacion) => calificacion.cliente)
-    calificacion: Calificacion[];
+    @OneToMany(() => Calificacion, (calificacion) => calificacion.cliente, {nullable: true})
+    calificacion?: Calificacion[];
 }

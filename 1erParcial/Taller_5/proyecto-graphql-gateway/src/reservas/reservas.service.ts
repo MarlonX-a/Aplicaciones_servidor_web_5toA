@@ -19,4 +19,10 @@ export class ReservasService {
     )
     return response.data;
   }
+
+  async findByCliente(clienteId: number) {
+    const reservas = await this.findAll();
+    return reservas.filter( r => r.clienteId === clienteId);
+  }
+  
 }

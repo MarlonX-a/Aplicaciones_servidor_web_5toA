@@ -1,17 +1,14 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { ServicioUbicacionService } from './servicio-ubicacion.service';
 import { ServicioUbicacion } from './entities/servicio-ubicacion.entity';
-import { CreateServicioUbicacionInput } from './dto/create-servicio-ubicacion.input';
-import { UpdateServicioUbicacionInput } from './dto/update-servicio-ubicacion.input';
+import { UbicacionesService } from 'src/ubicaciones/ubicaciones.service';
 
 @Resolver(() => ServicioUbicacion)
 export class ServicioUbicacionResolver {
-  constructor(private readonly servicioUbicacionService: ServicioUbicacionService) {}
+  constructor(private readonly servicioUbicacionService: ServicioUbicacionService,
+    private readonly ubicacionService: UbicacionesService
+  ) {}
 
-  @Mutation(() => ServicioUbicacion)
-  createServicioUbicacion(@Args('createServicioUbicacionInput') createServicioUbicacionInput: CreateServicioUbicacionInput) {
-    return this.servicioUbicacionService.create(createServicioUbicacionInput);
-  }
 
   @Query(() => [ServicioUbicacion], { name: 'servicioUbicacion' })
   findAll() {
@@ -23,13 +20,9 @@ export class ServicioUbicacionResolver {
     return this.servicioUbicacionService.findOne(id);
   }
 
-  @Mutation(() => ServicioUbicacion)
-  updateServicioUbicacion(@Args('updateServicioUbicacionInput') updateServicioUbicacionInput: UpdateServicioUbicacionInput) {
-    return this.servicioUbicacionService.update(updateServicioUbicacionInput.id, updateServicioUbicacionInput);
+  @ResolveField()
+  async ubicacion(@Parent() servicioUbicacion: ServicioUbicacion) {
+    return this.ubicacionService.findOne(servicioUbicacion.ubicacion);
   }
 
-  @Mutation(() => ServicioUbicacion)
-  removeServicioUbicacion(@Args('id', { type: () => Int }) id: number) {
-    return this.servicioUbicacionService.remove(id);
-  }
 }

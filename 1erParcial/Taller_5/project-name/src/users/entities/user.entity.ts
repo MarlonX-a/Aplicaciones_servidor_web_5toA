@@ -25,9 +25,9 @@ export class User {
   @Column()
   rol: "cliente"|"proveedor";
 
-  @OneToOne(() => Cliente, (cliente) => cliente.user)
-  cliente: Cliente;
+  @OneToOne(() => Cliente, (cliente) => cliente.user, { nullable: true })
+  cliente?: Cliente;
 
-  @OneToOne(() => Proveedor, (proveedor) => proveedor.user)
-  proveedor: Proveedor;
+  @OneToOne(() => Proveedor, (proveedor) => proveedor.user, { nullable: true })
+  proveedor?: Proveedor;
 }

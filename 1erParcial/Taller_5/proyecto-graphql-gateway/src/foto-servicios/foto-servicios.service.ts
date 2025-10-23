@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFotoServicioInput } from './dto/create-foto-servicio.input';
 import { UpdateFotoServicioInput } from './dto/update-foto-servicio.input';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class FotoServiciosService {
-  create(createFotoServicioInput: CreateFotoServicioInput) {
-    return 'This action adds a new fotoServicio';
+  constructor(private readonly httpService: HttpService) {}
+
+  async findAll() {
+    const response = await firstValueFrom(
+      this.httpService.get('http://localhost:3000/foto-servicios')
+    );
+    return response.data;
   }
 
-  findAll() {
-    return `This action returns all fotoServicios`;
+  async findOne(id: number) {
+    const response = await firstValueFrom(
+      this.httpService.get(`http://localhost:3000/foto-servicios/${id}`)
+    );
+    return response.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} fotoServicio`;
+  async findByServicio(servicioId: number) {
+    const fotoServicios = await this.findAll();
+    return fotoServicios.filter( f => f.servicioId === servicioId);
   }
 
-  update(id: number, updateFotoServicioInput: UpdateFotoServicioInput) {
-    return `This action updates a #${id} fotoServicio`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} fotoServicio`;
-  }
 }

@@ -14,15 +14,15 @@ export class Proveedor {
     @Column()
     descripcion: string;
 
-    @OneToOne(() => User, (user) => user.proveedor)
+    @OneToOne(() => User, (user) => user.proveedor, {nullable: true})
     @JoinColumn()
-    user: User;
+    user?: User;
 
-    @ManyToOne(() => Ubicacion, (ubicacion) => ubicacion.proveedor)
-    ubicacion: Ubicacion;
+    @ManyToOne(() => Ubicacion, (ubicacion) => ubicacion.proveedor, {nullable: true})
+    ubicacion?: Ubicacion;
 
-    @OneToMany(()=> Servicio, (servicio) => servicio.proveedor )
-    servicio: Servicio[];
+    @OneToMany(()=> Servicio, (servicio) => servicio.proveedor, {nullable: true} )
+    servicio?: Servicio[];
 
 
 }

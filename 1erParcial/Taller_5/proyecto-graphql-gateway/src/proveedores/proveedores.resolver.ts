@@ -1,35 +1,36 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { ProveedoresService } from './proveedores.service';
 import { Proveedore } from './entities/proveedore.entity';
-import { CreateProveedoreInput } from './dto/create-proveedore.input';
-import { UpdateProveedoreInput } from './dto/update-proveedore.input';
+import { UbicacionesService } from 'src/ubicaciones/ubicaciones.service';
+import { ServicioService } from 'src/servicio/servicio.service';
 
 @Resolver(() => Proveedore)
 export class ProveedoresResolver {
-  constructor(private readonly proveedoresService: ProveedoresService) {}
+  constructor(private readonly proveedoresService: ProveedoresService,
+    private readonly serviciosService: ServicioService,
+    private readonly ubicacionesService: UbicacionesService
+  ) {}
 
-  @Mutation(() => Proveedore)
-  createProveedore(@Args('createProveedoreInput') createProveedoreInput: CreateProveedoreInput) {
-    return this.proveedoresService.create(createProveedoreInput);
-  }
+
 
   @Query(() => [Proveedore], { name: 'proveedores' })
-  findAll() {
+  getProveedores() {
     return this.proveedoresService.findAll();
   }
 
   @Query(() => Proveedore, { name: 'proveedore' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  getProveedor(@Args('id', { type: () => Int }) id: number) {
     return this.proveedoresService.findOne(id);
   }
 
-  @Mutation(() => Proveedore)
-  updateProveedore(@Args('updateProveedoreInput') updateProveedoreInput: UpdateProveedoreInput) {
-    return this.proveedoresService.update(updateProveedoreInput.id, updateProveedoreInput);
+  @ResolveField()
+  async servicio(@Parent() proveedor: Proveedore) {
+    return this.serviciosService.findOne(proveedor.servicio);
   }
 
-  @Mutation(() => Proveedore)
-  removeProveedore(@Args('id', { type: () => Int }) id: number) {
-    return this.proveedoresService.remove(id);
+  @ResolveField()
+  async ubicacion(@Parent() proveedor: Proveedore) {
+    return this.ubicacionesService.findOne(proveedor.ubicacion);
   }
+
 }

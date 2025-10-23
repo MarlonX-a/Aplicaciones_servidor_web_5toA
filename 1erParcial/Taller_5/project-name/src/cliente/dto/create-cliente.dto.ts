@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from "class-validator";
+import { IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateClienteDto {
 
@@ -6,17 +6,22 @@ export class CreateClienteDto {
     telefono: string;
 
     @IsUUID()
+    @IsOptional()
     user: string;
 
     @IsUUID()
+    @IsOptional()
     ubicacion: string;
 
     @IsUUID()
+    @IsOptional()
     calificacion: string;
 
     @IsUUID()
+    @IsOptional()
     comentario: string;
 
     @IsUUID()
+    @IsOptional()
     reserva: string;
 }

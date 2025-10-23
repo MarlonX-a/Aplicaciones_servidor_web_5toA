@@ -24,30 +24,41 @@ export class ProveedorService {
   ) {}
 
   async create(createProveedorDto: CreateProveedorDto) {
-    const { telefono, user, ubicacion, servicio } = createProveedorDto;
+    const { telefono, descripcion, user, ubicacion, servicio } = createProveedorDto;
 
-    const userNuevo = await this.userRepository.findOneBy({ id: user });
-    if (!userNuevo) {
-      throw new NotFoundException(`Usuario con ID ${user} no encontrado`);
+    // Usuario opcional
+    let userNuevo: User | null = null;
+    if (user) {
+      userNuevo = await this.userRepository.findOneBy({ id: user });
+      if (!userNuevo)
+        throw new NotFoundException(`Usuario con ID ${user} no encontrado`);
     }
 
-    const ubicacionR = await this.ubicacionRepository.findOneBy({ id: ubicacion });
-    if (!ubicacionR) {
-      throw new NotFoundException(`Ubicación con ID ${ubicacion} no encontrada`);
+    // Ubicación opcional
+    let ubicacionR: Ubicacion | null = null;
+    if (ubicacion) {
+      ubicacionR = await this.ubicacionRepository.findOneBy({ id: ubicacion });
+      if (!ubicacionR)
+        throw new NotFoundException(`Ubicación con ID ${ubicacion} no encontrada`);
     }
 
-    const servicioE = await this.servicioRepository.findOneBy({ id: servicio });
-    if (!servicioE) {
-      throw new NotFoundException(`Servicio con ID ${servicio} no encontrado`);
+    // Servicio opcional (array)
+    let servicioE: Servicio[] = [];
+    if (servicio) {
+      const servicioObj = await this.servicioRepository.findOneBy({ id: servicio });
+      if (!servicioObj)
+        throw new NotFoundException(`Servicio con ID ${servicio} no encontrado`);
+      servicioE = [servicioObj];
     }
 
+    // ✅ Arreglo final: casteamos explícitamente el objeto
     const proveedor = this.proveedorRepository.create({
       telefono,
-      user: userNuevo,
-      ubicacion: ubicacionR,
-      // entity declares 'servicio' as an array, provide an array here
-      servicio: [servicioE],
-    });
+      descripcion,
+      user: userNuevo ?? undefined,
+      ubicacion: ubicacionR ?? undefined,
+      servicio: servicioE,
+    } as Proveedor);
 
     return this.proveedorRepository.save(proveedor);
   }
@@ -61,7 +72,7 @@ export class ProveedorService {
   async findOne(id: string) {
     const proveedor = await this.proveedorRepository.findOne({
       where: { id },
-      relations: ['user', 'ubicacion',  'servicio'],
+      relations: ['user', 'ubicacion', 'servicio'],
     });
 
     if (!proveedor) {
@@ -81,26 +92,55 @@ export class ProveedorService {
       throw new NotFoundException(`Proveedor con ID ${id} no encontrado`);
     }
 
-    if (updateProveedorDto.telefono !== undefined) {
+    if (updateProveedorDto.telefono !== undefined)
       proveedor.telefono = updateProveedorDto.telefono;
+
+    // Usuario opcional
+    if (updateProveedorDto.user !== undefined) {
+      if (updateProveedorDto.user === null) {
+        proveedor.user = undefined;
+      } else {
+        const userNuevo = await this.userRepository.findOneBy({
+          id: updateProveedorDto.user,
+        });
+        if (!userNuevo)
+          throw new NotFoundException(
+            `Usuario con ID ${updateProveedorDto.user} no encontrado`,
+          );
+        proveedor.user = userNuevo;
+      }
     }
 
-    if (updateProveedorDto.user) {
-      const userNuevo = await this.userRepository.findOneBy({ id: updateProveedorDto.user });
-      if (!userNuevo) throw new NotFoundException(`Usuario con ID ${updateProveedorDto.user} no encontrado`);
-      proveedor.user = userNuevo;
+    // Ubicación opcional
+    if (updateProveedorDto.ubicacion !== undefined) {
+      if (updateProveedorDto.ubicacion === null) {
+        proveedor.ubicacion = undefined;
+      } else {
+        const ubicacionR = await this.ubicacionRepository.findOneBy({
+          id: updateProveedorDto.ubicacion,
+        });
+        if (!ubicacionR)
+          throw new NotFoundException(
+            `Ubicación con ID ${updateProveedorDto.ubicacion} no encontrada`,
+          );
+        proveedor.ubicacion = ubicacionR;
+      }
     }
 
-    if (updateProveedorDto.ubicacion) {
-      const ubicacionR = await this.ubicacionRepository.findOneBy({ id: updateProveedorDto.ubicacion });
-      if (!ubicacionR) throw new NotFoundException(`Ubicación con ID ${updateProveedorDto.ubicacion} no encontrada`);
-      proveedor.ubicacion = ubicacionR;
-    }
-
-    if (updateProveedorDto.servicio) {
-      const servicioE = await this.servicioRepository.findOneBy({ id: updateProveedorDto.servicio });
-      if (!servicioE) throw new NotFoundException(`Servicio con ID ${updateProveedorDto.servicio} no encontrado`);
-      proveedor.servicio = [servicioE];
+    // Servicio opcional
+    if (updateProveedorDto.servicio !== undefined) {
+      if (updateProveedorDto.servicio === null) {
+        proveedor.servicio = [];
+      } else {
+        const servicioObj = await this.servicioRepository.findOneBy({
+          id: updateProveedorDto.servicio,
+        });
+        if (!servicioObj)
+          throw new NotFoundException(
+            `Servicio con ID ${updateProveedorDto.servicio} no encontrado`,
+          );
+        proveedor.servicio = [servicioObj];
+      }
     }
 
     return this.proveedorRepository.save(proveedor);
@@ -112,4 +152,3 @@ export class ProveedorService {
     return { message: 'Proveedor eliminado correctamente' };
   }
 }
-
